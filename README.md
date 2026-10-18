@@ -25,7 +25,6 @@ IncidentZero helps an investigator move beyond a flat list of alerts. It connect
 - [API overview](#api-overview)
 - [Security, privacy, and limitations](#security-privacy-and-limitations)
 - [Project structure](#project-structure)
-- [AI-assistance disclosure](#ai-assistance-disclosure)
 - [License](#license)
 
 ---
