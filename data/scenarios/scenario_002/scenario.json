@@ -1,0 +1,12 @@
+{
+  "scenario_id": "scenario_002",
+  "name": "Remote execution fan-out from admin jump host",
+  "organization": "Kestrel Ridge Analytics (fictional)",
+  "description": "An EDR alert fired for remote execution from SRV-JUMP-01 to three application servers.",
+  "time_window": {
+    "start": "2026-09-21T08:00:00Z",
+    "end": "2026-09-21T12:00:00Z"
+  },
+  "suggested_question": "Investigate the remote execution alert on SRV-JUMP-01. Is this lateral movement?",
+  "synthetic": true
+}

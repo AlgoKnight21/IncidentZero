@@ -1,0 +1,25 @@
+# Local stack: FalkorDB + IncidentZero API/console.
+# NOTE: this file was NOT executed in the authoring environment (no Docker daemon, Docker Hub blocked).
+# The application itself was verified against FalkorDB v4.18.9 built from source on Redis 8.0.6.
+services:
+  falkordb:
+    image: ${FALKORDB_IMAGE:-falkordb/falkordb:latest}
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    environment:
+      FALKORDB_HOST: falkordb
+      FALKORDB_PORT: "6379"
+      INCIDENTZERO_GRAPH_PREFIX: incidentzero_
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    ports:
+      - "8000:8000"

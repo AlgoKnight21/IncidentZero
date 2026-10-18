@@ -1,0 +1,12 @@
+{
+  "scenario_id": "scenario_003",
+  "name": "Hidden script interpreter with incomplete telemetry",
+  "organization": "Kestrel Ridge Analytics (fictional)",
+  "description": "An EDR alert on WS-FIN-05 with limited surrounding telemetry.",
+  "time_window": {
+    "start": "2026-09-28T09:00:00Z",
+    "end": "2026-09-28T13:00:00Z"
+  },
+  "suggested_question": "Investigate the hidden script interpreter alert on WS-FIN-05.",
+  "synthetic": true
+}

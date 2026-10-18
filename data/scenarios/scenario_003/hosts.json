@@ -1,0 +1,32 @@
+[
+  {
+    "host_id": "WS-FIN-05",
+    "platform": "windows",
+    "asset_role": "finance_workstation",
+    "ip": "10.40.9.15"
+  },
+  {
+    "host_id": "WS-FIN-06",
+    "platform": "windows",
+    "asset_role": "finance_workstation",
+    "ip": "10.40.9.16"
+  },
+  {
+    "host_id": "SRV-ERP-01",
+    "platform": "linux",
+    "asset_role": "erp_server",
+    "ip": "10.40.1.20"
+  },
+  {
+    "host_id": "WS-HR-01",
+    "platform": "windows",
+    "asset_role": "hr_workstation",
+    "ip": "10.40.8.11"
+  },
+  {
+    "host_id": "SRV-PRINT-01",
+    "platform": "windows",
+    "asset_role": "print_server",
+    "ip": "10.40.1.30"
+  }
+]

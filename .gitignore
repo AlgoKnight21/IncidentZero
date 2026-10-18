@@ -1,0 +1,61 @@
+# Git internals
+.git
+.git-data/
+
+# Python environments
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Build and packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local databases and runtime state
+*.sqlite
+*.sqlite3
+*.db
+*.rdb
+*.pid
+
+# Editor and IDE state
+.vscode/
+.idea/
+*.code-workspace
+
+
+# Generated script artifacts
+scripts/__pycache__/
+scripts/*.log
+scripts/*.tmp
+scripts/output/
+
+/scripts
+/evaluation
+/tests
+/docs
+pytest.ini

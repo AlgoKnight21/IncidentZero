@@ -1,0 +1,30 @@
+{
+  "scenario_id": "scenario_001",
+  "files": [
+    "scenario.json",
+    "events.jsonl",
+    "hosts.json",
+    "identities.json"
+  ],
+  "record_count": 148,
+  "timezone": "UTC",
+  "timestamp_format": "ISO-8601 with Z suffix",
+  "expected_duplicate_event_ids": [
+    "S1-0014",
+    "S1-0019"
+  ],
+  "expected_rejected_event_ids": [
+    "S1-BAD-01",
+    "S1-BAD-02"
+  ],
+  "sources": [
+    "change_mgmt",
+    "edr",
+    "edr_health",
+    "file_audit",
+    "host_auth_log",
+    "netflow"
+  ],
+  "synthetic": true,
+  "generator": "scripts/generate_dataset.py"
+}

@@ -1,0 +1,12 @@
+{
+  "scenario_id": "scenario_001",
+  "name": "Engineering workstation document execution and service-account use",
+  "organization": "Kestrel Ridge Analytics (fictional)",
+  "description": "Multi-host activity across engineering workstation WS-ENG-07, file server SRV-FILE-01 and finance workstation WS-FIN-02 over a five-hour window. Investigate an EDR alert on WS-ENG-07 and related identity activity.",
+  "time_window": {
+    "start": "2026-09-14T12:00:00Z",
+    "end": "2026-09-14T17:00:00Z"
+  },
+  "suggested_question": "Investigate the EDR alert on WS-ENG-07: what happened and did it spread to other hosts?",
+  "synthetic": true
+}

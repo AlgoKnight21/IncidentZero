@@ -1,0 +1,38 @@
+[
+  {
+    "host_id": "WS-ENG-07",
+    "platform": "windows",
+    "asset_role": "engineering_workstation",
+    "ip": "10.20.7.15"
+  },
+  {
+    "host_id": "WS-FIN-02",
+    "platform": "windows",
+    "asset_role": "finance_workstation",
+    "ip": "10.20.9.22"
+  },
+  {
+    "host_id": "WS-ENG-11",
+    "platform": "windows",
+    "asset_role": "engineering_workstation",
+    "ip": "10.20.7.31"
+  },
+  {
+    "host_id": "SRV-FILE-01",
+    "platform": "windows",
+    "asset_role": "file_server",
+    "ip": "10.20.1.40"
+  },
+  {
+    "host_id": "SRV-BACKUP-01",
+    "platform": "linux",
+    "asset_role": "backup_server",
+    "ip": "10.20.1.60"
+  },
+  {
+    "host_id": "SRV-DC-01",
+    "platform": "windows",
+    "asset_role": "domain_controller",
+    "ip": "10.20.1.10"
+  }
+]

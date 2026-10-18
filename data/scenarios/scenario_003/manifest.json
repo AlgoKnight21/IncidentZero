@@ -1,0 +1,22 @@
+{
+  "scenario_id": "scenario_003",
+  "files": [
+    "scenario.json",
+    "events.jsonl",
+    "hosts.json",
+    "identities.json"
+  ],
+  "record_count": 40,
+  "timezone": "UTC",
+  "timestamp_format": "ISO-8601 with Z suffix",
+  "expected_duplicate_event_ids": [],
+  "expected_rejected_event_ids": [],
+  "sources": [
+    "edr",
+    "edr_health",
+    "file_audit",
+    "netflow"
+  ],
+  "synthetic": true,
+  "generator": "scripts/generate_dataset.py"
+}

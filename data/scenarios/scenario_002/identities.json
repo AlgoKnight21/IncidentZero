@@ -1,0 +1,12 @@
+[
+  {
+    "account_id": "adm.okafor",
+    "account_type": "admin",
+    "home_host": "SRV-JUMP-01"
+  },
+  {
+    "account_id": "u.lindqvist",
+    "account_type": "user",
+    "home_host": "WS-OPS-03"
+  }
+]

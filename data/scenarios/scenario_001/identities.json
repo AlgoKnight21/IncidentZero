@@ -1,0 +1,27 @@
+[
+  {
+    "account_id": "u.akhtar",
+    "account_type": "user",
+    "home_host": "WS-ENG-07"
+  },
+  {
+    "account_id": "u.mbeki",
+    "account_type": "user",
+    "home_host": "WS-FIN-02"
+  },
+  {
+    "account_id": "u.santos",
+    "account_type": "user",
+    "home_host": "WS-ENG-11"
+  },
+  {
+    "account_id": "svc.backup",
+    "account_type": "service",
+    "home_host": "SRV-BACKUP-01"
+  },
+  {
+    "account_id": "adm.okafor",
+    "account_type": "admin",
+    "home_host": null
+  }
+]

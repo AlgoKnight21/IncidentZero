@@ -1,0 +1,17 @@
+[
+  {
+    "account_id": "u.haddad",
+    "account_type": "user",
+    "home_host": "WS-FIN-05"
+  },
+  {
+    "account_id": "u.novak",
+    "account_type": "user",
+    "home_host": "WS-FIN-06"
+  },
+  {
+    "account_id": "u.reyes",
+    "account_type": "user",
+    "home_host": "WS-HR-01"
+  }
+]

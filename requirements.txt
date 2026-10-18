@@ -1,0 +1,8 @@
+# Runtime (bounded to versions verified in this repo; see docs/VERIFICATION_REPORT.md)
+falkordb>=1.8.0,<2          # official FalkorDB client; pulls redis>=8,<9
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+pydantic>=2.9,<3
+# Tests / tooling
+pytest>=8.3,<10
+requests>=2.32,<3

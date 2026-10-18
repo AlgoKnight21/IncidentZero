@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IncidentZero Console</title>
+<style>
+:root{--bg:#0f1419;--panel:#171d24;--line:#2a333d;--text:#dde3ea;--muted:#8a96a3;--obs:#3fb68b;--inf:#e0a43a;--con:#e0605e;--unk:#8f84e8;--accent:#5aa9e6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;letter-spacing:.3px}header .tag{color:var(--muted);font-size:12px}
+main{padding:16px 20px;display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-width:0}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:0 0 10px}
+.s12{grid-column:span 12}.s8{grid-column:span 8}.s6{grid-column:span 6}.s4{grid-column:span 4}
+@media(max-width:900px){.s8,.s6,.s4{grid-column:span 12}}
+select,input,button{background:#0b1015;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:inherit}
+button{background:var(--accent);color:#04121f;border:0;font-weight:600;cursor:pointer}button.sec{background:#26313c;color:var(--text)}
+button:disabled{opacity:.5;cursor:wait}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.grow{flex:1;min-width:240px}
+.badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.4px}
+.observation,.observed{background:#123b2d;color:var(--obs)}.inference,.inferred{background:#3d2f12;color:var(--inf)}
+.contradiction{background:#3f1a1a;color:var(--con)}.unknown{background:#25204a;color:var(--unk)}.derived_from_field{background:#1d2c3d;color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}
+.eid{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline dotted}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}.muted{color:var(--muted)}
+.stat{font-size:22px;font-weight:700}.stats{display:flex;gap:22px;flex-wrap:wrap}
+.assess{font-size:16px;font-weight:700;padding:10px 12px;border-radius:6px;margin-bottom:8px}
+.st-compromise_likely{background:#3f1a1a;color:#ffb3b1}.st-benign_likely{background:#123b2d;color:#9be8c9}.st-inconclusive{background:#25204a;color:#c9c2ff}
+.hyps{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.hyps{grid-template-columns:1fr}}
+.hyp{border:1px solid var(--line);border-radius:6px;padding:10px}.hyp.favoured{border-color:var(--accent)}
+.hyp h3{margin:0 0 6px;font-size:14px}ul{margin:4px 0;padding-left:18px}li{margin:3px 0}
+.gap{background:#25204a55}.scroll{max-height:420px;overflow:auto}
+pre{white-space:pre-wrap;background:#0b1015;padding:10px;border-radius:6px;max-height:420px;overflow:auto;font-size:12px}
+#drill{position:fixed;right:16px;bottom:16px;width:min(520px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#0b1015;border:1px solid var(--accent);border-radius:8px;padding:12px;display:none;z-index:9}
+#err{color:var(--con);font-weight:600}svg text{fill:var(--text);font-size:10px;font-family:ui-monospace,monospace}
+.legend span{margin-right:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>IncidentZero</h1><span class="tag">Graph-native forensic investigation · FalkorDB · synthetic data only</span>
+  <span id="health" class="tag"></span>
+</header>
+<main>
+  <section class="s12">
+    <h2>1 · Scenario & question</h2>
+    <div class="row">
+      <select id="scenario"></select>
+      <button class="sec" id="loadBtn">Reset & load into FalkorDB</button>
+      <input id="question" class="grow" placeholder="Investigation question">
+      <button id="runBtn">Run investigation</button>
+    </div>
+    <p id="scenarioDesc" class="muted"></p>
+    <div id="loadResult" class="mono muted"></div><div id="err"></div>
+    <div class="stats" id="counts"></div>
+  </section>
+
+  <section class="s12" id="assessSec" hidden>
+    <h2>2 · Assessment</h2>
+    <div id="assess"></div>
+    <div class="legend muted"><span class="badge observation">OBSERVED</span> stated by a source event
+      <span class="badge inference">INFERRED</span> produced by a named rule
+      <span class="badge contradiction">CONTRADICTS</span> evidence against a hypothesis
+      <span class="badge unknown">UNKNOWN</span> missing telemetry / not determinable</div>
+  </section>
+
+  <section class="s12" id="hypSec" hidden><h2>3 · Competing hypotheses</h2><div class="hyps" id="hyps"></div></section>
+
+  <section class="s8" id="tlSec" hidden><h2>4 · Timeline (evidence set, UTC)</h2><div class="scroll" id="timeline"></div></section>
+  <section class="s4" id="unkSec" hidden><h2>5 · Missing telemetry & next evidence</h2><div id="unknowns"></div><div id="next"></div></section>
+
+  <section class="s12" id="chainSec" hidden><h2>6 · Graph evidence chain (live FalkorDB query results)</h2>
+    <div id="paths"></div>
+    <div class="legend muted" style="margin:6px 0">Edges: <span style="color:var(--obs)">— observed</span> <span style="color:var(--accent)">- - derived from field</span> <span style="color:var(--inf)">··· inferred (rule)</span></div>
+    <div style="overflow:auto"><svg id="graph"></svg></div></section>
+
+  <section class="s12" id="findSec" hidden><h2>7 · Findings (every factual statement cites source events)</h2><div class="scroll" id="findings"></div></section>
+
+  <section class="s12" id="repSec" hidden><h2>8 · Report</h2>
+    <div class="row"><a id="dlJson" download><button class="sec">Export JSON</button></a><a id="dlMd" download><button class="sec">Export Markdown</button></a>
+    <span class="muted" id="queryCount"></span></div><pre id="report"></pre></section>
+</main>
+<div id="drill"></div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let scenarios = [], current = null;
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const ct = r.headers.get('content-type') || '';
+  const body = ct.includes('json') ? await r.json() : await r.text();
+  if (!r.ok) throw new Error(`${r.status}: ${typeof body === 'string' ? body : (body.detail || body.error || JSON.stringify(body))}`);
+  return body;
+}
+const ids = list => (list || []).map(i => `<span class="eid" data-eid="${esc(i)}">${esc(i)}</span>`).join(' ');
+function err(e){ $('#err').textContent = e ? String(e.message || e) : ''; }
+
+async function init() {
+  try { const h = await api('/health'); $('#health').textContent = `FalkorDB ${h.falkordb} · graph module v${h.graph_module?.ver}`; }
+  catch (e) { $('#health').textContent = 'FalkorDB unreachable'; }
+  scenarios = await api('/api/scenarios');
+  $('#scenario').innerHTML = scenarios.map(s => `<option value="${esc(s.scenario_id)}">${esc(s.scenario_id)} — ${esc(s.name)}${s.loaded ? '' : ' (not loaded)'}</option>`).join('');
+  pick();
+}
+function pick() {
+  const s = scenarios.find(x => x.scenario_id === $('#scenario').value);
+  $('#question').value = s?.suggested_question || '';
+  $('#scenarioDesc').textContent = s ? `${s.organization}: ${s.description}` : '';
+  if (s?.loaded) counts();
+}
+async function counts() {
+  const d = await api(`/api/events?scenario_id=${$('#scenario').value}&limit=1`);
+  const rels = d.relationship_counts.reduce((a, r) => a + r.n, 0);
+  $('#counts').innerHTML = d.node_counts.map(c => `<div><div class="stat">${c.n}</div><div class="muted">${esc(c.label)} nodes</div></div>`).join('')
+    + `<div><div class="stat">${rels}</div><div class="muted">relationships</div></div>`;
+}
+async function load() {
+  err(); $('#loadBtn').disabled = true;
+  try {
+    const r = await api(`/api/scenarios/${$('#scenario').value}/load?reset=true`, {method: 'POST'});
+    $('#loadResult').textContent = `graph ${r.graph}: received ${r.received}, accepted ${r.accepted}, duplicates ${r.duplicates_in_batch.join(', ') || 'none'}, rejected ${r.rejected.map(x => x.event_id + ' (' + x.errors[0] + ')').join('; ') || 'none'}; created ${r.nodes_created} nodes / ${r.relationships_created} relationships`;
+    scenarios = await api('/api/scenarios'); await counts();
+  } catch (e) { err(e); } finally { $('#loadBtn').disabled = false; }
+}
+async function run() {
+  err(); $('#runBtn').disabled = true;
+  try {
+    const inv = await api('/api/investigations', {method: 'POST', headers: {'content-type': 'application/json'},
+      body: JSON.stringify({scenario_id: $('#scenario').value, question: $('#question').value})});
+    current = inv; render(inv);
+    const g = await api(`/api/investigations/${inv.investigation_id}/graph?scenario_id=${inv.scenario_id}`);
+    drawGraph(g);
+    const md = await api(`/api/investigations/${inv.investigation_id}/report?format=markdown&scenario_id=${inv.scenario_id}`);
+    $('#report').textContent = md;
+    $('#dlJson').href = `/api/investigations/${inv.investigation_id}/report?scenario_id=${inv.scenario_id}`;
+    $('#dlJson').download = `${inv.investigation_id}.json`;
+    $('#dlMd').href = 'data:text/markdown;charset=utf-8,' + encodeURIComponent(md);
+    $('#dlMd').download = `${inv.investigation_id}.md`;
+  } catch (e) { err(e); } finally { $('#runBtn').disabled = false; }
+}
+function render(inv) {
+  document.querySelectorAll('section[hidden]').forEach(s => s.hidden = false);
+  const a = inv.assessment;
+  $('#assess').innerHTML = `<div class="assess st-${esc(a.status)}">${esc(a.status.replace('_', ' ').toUpperCase())}</div>
+    <div>${esc(a.statement)}</div><div class="muted">Seed ${ids([inv.scope.seed_event_id])} — ${esc(inv.scope.seed_reason)} · investigation <span class="mono">${esc(inv.investigation_id)}</span> · ${inv.duration_ms} ms · ${inv.query_log.length} Cypher queries</div>
+    <div class="muted">${esc(inv.disclaimer || '')}</div>`;
+  $('#hyps').innerHTML = inv.hypotheses.map(h => `<div class="hyp ${esc(h.status)}">
+    <h3>${esc(h.hypothesis_id)} · ${esc(h.kind)} <span class="muted">— ${esc(h.status)}, confidence ${esc(h.confidence)}</span></h3>
+    <div>${esc(h.description)}</div>
+    <b style="color:var(--obs)">Supporting (${h.support_score})</b><ul>${h.supporting.map(i => `<li><span class="badge inference">${esc(i.rule)}</span> ${esc(i.rationale)}<br>${ids(i.event_ids)}</li>`).join('') || '<li class="muted">none retrieved</li>'}</ul>
+    <b style="color:var(--con)">Contradicting (${h.contradiction_score})</b><ul>${h.contradicting.map(i => `<li><span class="badge contradiction">${esc(i.rule)}</span> ${esc(i.rationale)}<br>${ids(i.event_ids)}</li>`).join('') || '<li class="muted">none retrieved</li>'}</ul>
+    <b style="color:var(--unk)">Missing evidence</b><ul>${h.missing_evidence.map(m => `<li class="mono">${esc(m)}</li>`).join('') || '<li class="muted">none identified</li>'}</ul>
+    <div class="muted"><b>Rationale:</b> ${esc(h.confidence_rationale)}</div>
+    <div class="muted"><b>Assumptions:</b> ${h.assumptions.map(esc).join('; ')}</div></div>`).join('')
+    || '<div class="muted">No hypotheses: insufficient evidence for multiple meaningful explanations.</div>';
+  const gapRows = inv.timeline_gaps.filter(g => g.type === 'sensor_offline');
+  $('#timeline').innerHTML = `<table><tr><th>Time (UTC)</th><th>Event</th><th>Type</th><th>Host</th><th>Source record</th><th>Summary</th></tr>
+    ${inv.timeline.map(e => { const inGap = gapRows.some(g => e.ts_epoch >= g.start && (g.end == null || e.ts_epoch <= g.end));
+      return `<tr class="${inGap ? 'gap' : ''}"><td class="mono">${esc(e.timestamp)}</td><td>${ids([e.event_id])}</td><td>${esc(e.event_type)}</td><td>${esc(e.host_id)}</td><td class="mono">${esc(e.source_record_id)}</td><td>${esc(e.summary)}</td></tr>`; }).join('')}</table>
+    ${gapRows.map(g => `<p class="badge unknown">EDR offline ${esc(g.start_iso)} → ${esc(g.end_iso || 'end of data')} (shaded rows fall inside the gap)</p>`).join('')}`;
+  $('#unknowns').innerHTML = '<b>Unknowns</b><ul>' + (inv.unknowns.map(u => `<li><span class="badge unknown">${esc(u.rule)}</span> ${esc(u.statement)}<br><span class="muted">Impact: ${esc(u.affects)}</span> ${ids(u.event_ids)}</li>`).join('') || '<li class="muted">none</li>') + '</ul>';
+  $('#next').innerHTML = '<b>Recommended next evidence</b><ol>' + inv.next_evidence.map(n => `<li><b>${esc(n.collect)}</b><br><span class="muted">${esc(n.why)}</span></li>`).join('') + '</ol>';
+  const paths = inv.event_chains.evidence_paths || [];
+  $('#paths').innerHTML = paths.map(p => '<div class="mono">' + p.nodes.map((n, i) => `${p.labels[i] === 'Event' ? ids([n]) : `<b>${esc(n)}</b>`}<span class="muted">:${esc(p.labels[i])}</span>` + (i < p.rels.length ? ` <span class="badge ${esc(p.classes[i])}">${i === 1 ? '←' : '→'}${esc(p.rels[i])}</span> ` : '')).join('') + '</div>').join('') || '<div class="muted">No cross-host chain found from the seed host.</div>';
+  $('#findings').innerHTML = `<table><tr><th>ID</th><th>Type</th><th>Statement</th><th>Source events</th><th>Rule / query</th></tr>${inv.findings.map(f => `<tr><td class="mono">${esc(f.finding_id)}</td><td><span class="badge ${esc(f.kind)}">${esc(f.kind.toUpperCase())}</span></td><td>${esc(f.statement)}</td><td>${ids(f.event_ids) || '<span class="muted">—</span>'}</td><td class="mono muted">${esc(f.rule || '')} ${esc(f.query || '')}</td></tr>`).join('')}</table>`;
+  $('#queryCount').textContent = `Provenance coverage ${(inv.provenance.coverage * 100).toFixed(1)}% · unsupported findings: ${inv.provenance.unsupported_finding_ids.length}`;
+}
+function drawGraph(g) {
+  const order = ['Process', 'Event', 'Host', 'Identity', 'File', 'NetworkEndpoint'];
+  const cols = {}; g.nodes.forEach(n => (cols[n.label] = cols[n.label] || []).push(n));
+  const pos = {}; const colW = 210, rowH = 22; let maxRows = 0;
+  order.forEach((lab, ci) => (cols[lab] || []).sort((a, b) => a.id.localeCompare(b.id)).forEach((n, ri) => { pos[n.id] = [20 + ci * colW, 30 + ri * rowH]; maxRows = Math.max(maxRows, ri + 1); }));
+  const W = 20 + order.length * colW, H = 50 + maxRows * rowH;
+  const color = {observed: '#3fb68b', derived_from_field: '#5aa9e6', inferred: '#e0a43a'};
+  const dash = {observed: '', derived_from_field: '6,4', inferred: '2,3'};
+  let s = order.map((l, i) => `<text x="${20 + i * colW}" y="14" style="fill:#8a96a3;font-weight:700">${l}</text>`).join('');
+  s += g.links.filter(l => pos[l.source] && pos[l.target]).map(l => { const [x1, y1] = pos[l.source], [x2, y2] = pos[l.target];
+    return `<line x1="${x1 + 4}" y1="${y1}" x2="${x2 + 4}" y2="${y2}" stroke="${color[l.classification] || '#555'}" stroke-dasharray="${dash[l.classification] || ''}" stroke-opacity=".55"><title>${esc(l.type)} (${esc(l.classification)})</title></line>`; }).join('');
+  s += g.nodes.map(n => { const [x, y] = pos[n.id] || [0, 0];
+    return `<circle cx="${x + 4}" cy="${y}" r="4" fill="${n.label === 'Event' ? '#5aa9e6' : '#dde3ea'}"></circle><text x="${x + 12}" y="${y + 3}" ${n.label === 'Event' ? `class="eid" data-eid="${esc(n.id)}"` : ''}>${esc(n.id.length > 30 ? '…' + n.id.slice(-29) : n.id)}</text>`; }).join('');
+  const svg = $('#graph'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.innerHTML = s;
+}
+async function drill(eid) {
+  try {
+    const e = await api(`/api/events/${encodeURIComponent(eid)}?scenario_id=${current ? current.scenario_id : $('#scenario').value}`);
+    $('#drill').style.display = 'block';
+    $('#drill').innerHTML = `<div class="row"><b class="mono">${esc(e.event_id)}</b><span class="badge observation">SOURCE EVENT</span><span style="flex:1"></span><button class="sec" onclick="this.parentNode.parentNode.style.display='none'">close</button></div>
+      <table><tr><th>timestamp</th><td class="mono">${esc(e.timestamp)} (original: ${esc(e.timestamp_original)})</td></tr>
+      <tr><th>type</th><td>${esc(e.event_type)}</td></tr><tr><th>source</th><td>${esc(e.source)}</td></tr>
+      <tr><th>source record</th><td class="mono">${esc(e.source_record_id)}</td></tr><tr><th>host / actor</th><td>${esc(e.host_id)} / ${esc(e.actor_id)}</td></tr>
+      <tr><th>summary</th><td>${esc(e.summary)}</td></tr></table>
+      <b>Graph relationships</b><table>${e.relationships.map(r => `<tr><td class="mono">-[:${esc(r.rel)}]-></td><td>${esc(r.dst_label)} <b>${esc(r.dst)}</b></td><td><span class="badge ${esc(r.classification)}">${esc(r.classification)}</span></td></tr>`).join('')}</table>
+      <b>Raw fields</b><pre>${esc(JSON.stringify(e.raw_fields, null, 2))}</pre>`;
+  } catch (x) { err(x); }
+}
+document.addEventListener('click', ev => { const t = ev.target.closest('[data-eid]'); if (t) drill(t.dataset.eid); });
+$('#scenario').addEventListener('change', pick); $('#loadBtn').addEventListener('click', load); $('#runBtn').addEventListener('click', run);
+init().catch(err);
+</script>
+</body>
+</html>

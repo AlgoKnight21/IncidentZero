@@ -1,0 +1,32 @@
+[
+  {
+    "host_id": "SRV-JUMP-01",
+    "platform": "windows",
+    "asset_role": "admin_jump_host",
+    "ip": "10.30.1.5"
+  },
+  {
+    "host_id": "SRV-APP-01",
+    "platform": "windows",
+    "asset_role": "application_server",
+    "ip": "10.30.2.11"
+  },
+  {
+    "host_id": "SRV-APP-02",
+    "platform": "windows",
+    "asset_role": "application_server",
+    "ip": "10.30.2.12"
+  },
+  {
+    "host_id": "SRV-APP-03",
+    "platform": "windows",
+    "asset_role": "application_server",
+    "ip": "10.30.2.13"
+  },
+  {
+    "host_id": "WS-OPS-03",
+    "platform": "windows",
+    "asset_role": "operations_workstation",
+    "ip": "10.30.5.23"
+  }
+]
