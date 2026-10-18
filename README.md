@@ -2,6 +2,8 @@
 
 **Graph-Powered Digital Forensics for Cyber Incident Reconstruction from connected evidence.**
 
+<img width="1774" height="887" alt="IncidentZero Forensic Graph Dashboard" src="https://github.com/user-attachments/assets/7594538d-22e0-4f0d-998a-430d2625e5f9" />
+
 
 IncidentZero helps an investigator move beyond a flat list of alerts. It connects events across processes, hosts, identities, files, and network endpoints; reconstructs evidence chains; compares competing explanations; and makes uncertainty visible. Each factual finding points back to source event IDs, while inferred relationships identify the rule that created them.
 
@@ -36,7 +38,7 @@ Those clues usually arrive as separate records from endpoint, authentication, ne
 
 The central problem IncidentZero addresses is:
 
-> **Given incomplete and partly ambiguous security telemetry, how can an investigator reconstruct the strongest evidence-supported incident narrative, compare plausible alternatives, and identify what evidence is still needed—without turning correlation into an unsupported claim of causation?**
+> **Given incomplete and partly ambiguous security telemetry, how can an investigator reconstruct the strongest evidence-supported incident narrative, compare plausible alternatives, and identify what evidence is still needed, without turning correlation into an unsupported claim of causation?**
 
 IncidentZero is designed as an investigation assistant, not an autonomous incident-response system. It helps answer *what is connected, what supports each explanation, what contradicts it, and what should be checked next*. It does not declare an attacker’s identity or a definitive root cause when the available evidence cannot justify that conclusion.
 
@@ -502,13 +504,6 @@ incidentzero/
 └── README.md
 ```
 
-
-
-## AI-assistance disclosure
-
-AI coding assistance was used during implementation and documentation. It contributed to the synthetic scenario data, tests and project documentation.
-
-Third-party components—including FalkorDB, Redis, `falkordb-py`, FastAPI, Pydantic, Uvicorn, and pytest—remain subject to their respective licences and are not represented as original work.
 
 ## License
 
