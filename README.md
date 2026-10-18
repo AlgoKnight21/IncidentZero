@@ -34,7 +34,7 @@ IncidentZero helps an investigator move beyond a flat list of alerts. It connect
 
 A security alert rarely tells the complete story. An endpoint may report a suspicious process, but an investigator still needs to determine what launched it, what the process accessed, which network endpoints it contacted, whether an identity subsequently appeared on another host, and whether that activity is consistent with normal operations.
 
-Those clues usually arrive as separate records from endpoint, authentication, network, and file telemetry. Looking at each record independently—or simply sorting every record by timestamp—can miss relationships that span multiple event sources and hosts. Conversely, connecting events solely because they occurred close together can create a false narrative: **temporal order is not proof of causation**.
+Those clues usually arrive as separate records from endpoint, authentication, network, and file telemetry. Looking at each record independently or simply sorting every record by timestamp, can miss relationships that span multiple event sources and hosts. Conversely, connecting events solely because they occurred close together can create a false narrative: **temporal order is not proof of causation**.
 
 The central problem IncidentZero addresses is:
 
